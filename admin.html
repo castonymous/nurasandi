@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Wedding Invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap">
+<style>
+:root {
+  --bg: #0F0A0C;
+  --surface: #1A1015;
+  --surface2: #241820;
+  --border: rgba(201,168,92,0.15);
+  --gold: #C9A85C;
+  --gold-dim: rgba(201,168,92,0.5);
+  --burgundy: #8B3A4D;
+  --text: #F0E8DC;
+  --muted: #9A8A7A;
+  --green: #4CAF50;
+  --red: #E57373;
+  --r: 6px;
+}
+* { margin:0;padding:0;box-sizing:border-box; }
+body { font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px; }
+
+/* LOGIN */
+#login-screen {
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center,#1A1015 0%,#0F0A0C 100%);
+}
+.login-box {
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:2.5rem;width:340px;text-align:center;
+}
+.login-logo {
+  font-size:2rem;margin-bottom:0.3rem;
+}
+.login-title {
+  font-size:1.1rem;font-weight:600;color:var(--gold);margin-bottom:0.3rem;
+}
+.login-sub { font-size:0.75rem;color:var(--muted);margin-bottom:1.5rem; }
+.login-input {
+  width:100%;padding:0.75rem 1rem;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r);color:var(--text);font-family:'Inter',sans-serif;
+  font-size:0.9rem;outline:none;margin-bottom:0.8rem;letter-spacing:0.1em;
+}
+.login-input:focus { border-color:var(--gold); }
+.login-btn {
+  width:100%;padding:0.8rem;background:var(--gold);border:none;border-radius:var(--r);
+  color:#1A1015;font-family:'Inter',sans-serif;font-weight:600;font-size:0.85rem;
+  cursor:pointer;letter-spacing:0.05em;transition:opacity 0.2s;
+}
+.login-btn:hover { opacity:0.85; }
+.login-err { color:var(--red);font-size:0.75rem;margin-top:0.5rem;display:none; }
+
+/* DASHBOARD */
+#dashboard { display:none; }
+.layout { display:grid;grid-template-columns:220px 1fr;min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  background:var(--surface);border-right:1px solid var(--border);
+  padding:1.5rem 0;position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-logo {
+  padding:0 1.2rem 1.5rem;border-bottom:1px solid var(--border);margin-bottom:1rem;
+}
+.sidebar-logo h1 { font-size:0.9rem;font-weight:600;color:var(--gold); }
+.sidebar-logo p { font-size:0.65rem;color:var(--muted);margin-top:0.2rem; }
+.nav-item {
+  display:flex;align-items:center;gap:0.6rem;padding:0.7rem 1.2rem;
+  cursor:pointer;font-size:0.8rem;color:var(--muted);transition:all 0.15s;
+  border-left:2px solid transparent;
+}
+.nav-item:hover { color:var(--text);background:var(--surface2); }
+.nav-item.active { color:var(--gold);border-left-color:var(--gold);background:var(--surface2); }
+.nav-icon { font-size:1rem;width:18px;text-align:center; }
+.sidebar-section { font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);padding:1rem 1.2rem 0.4rem;margin-top:0.5rem; }
+
+/* MAIN */
+.main-area { padding:2rem;overflow-y:auto; }
+.page-section { display:none; }
+.page-section.active { display:block; }
+.page-title { font-size:1.2rem;font-weight:600;margin-bottom:0.4rem; }
+.page-sub { color:var(--muted);font-size:0.8rem;margin-bottom:1.5rem; }
+
+/* CARDS */
+.card {
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.2rem;margin-bottom:1rem;
+}
+.card-title { font-size:0.7rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--gold);margin-bottom:1rem; }
+
+/* FORM ELEMENTS */
+.form-row { display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:0.8rem; }
+.form-row.single { grid-template-columns:1fr; }
+.form-group { margin-bottom:0.8rem; }
+label { display:block;font-size:0.7rem;color:var(--muted);margin-bottom:0.35rem;letter-spacing:0.05em; }
+input[type=text],input[type=url],input[type=date],input[type=time],input[type=number],input[type=password],textarea,select {
+  width:100%;padding:0.6rem 0.8rem;background:var(--bg);border:1px solid var(--border);
+  border-radius:4px;color:var(--text);font-family:'Inter',sans-serif;font-size:0.82rem;
+  outline:none;transition:border 0.2s;
+}
+input:focus,textarea:focus,select:focus { border-color:var(--gold-dim); }
+textarea { min-height:80px;resize:vertical; }
+select option { background:var(--surface); }
+
+/* BUTTONS */
+.btn {
+  padding:0.6rem 1.2rem;border-radius:4px;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:500;transition:all 0.15s;
+}
+.btn-primary { background:var(--gold);color:#1A1015; }
+.btn-primary:hover { opacity:0.85; }
+.btn-secondary { background:var(--surface2);color:var(--text);border:1px solid var(--border); }
+.btn-secondary:hover { border-color:var(--gold-dim); }
+.btn-danger { background:rgba(229,115,115,0.1);color:var(--red);border:1px solid rgba(229,115,115,0.3); }
+.btn-danger:hover { background:rgba(229,115,115,0.2); }
+.btn-sm { padding:0.35rem 0.8rem;font-size:0.72rem; }
+.btn-row { display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:1rem; }
+
+/* PHOTO UPLOAD */
+.photo-upload-area {
+  border:2px dashed var(--border);border-radius:var(--r);padding:1.5rem;text-align:center;
+  cursor:pointer;transition:border 0.2s;position:relative;
+}
+.photo-upload-area:hover { border-color:var(--gold-dim); }
+.photo-preview {
+  width:100px;height:130px;object-fit:cover;border:1px solid var(--border);
+  border-radius:4px;margin-bottom:0.5rem;
+}
+.photo-preview-rect {
+  width:100%;max-height:200px;object-fit:cover;border-radius:4px;
+  border:1px solid var(--border);margin-bottom:0.5rem;
+}
+.upload-label { font-size:0.72rem;color:var(--muted); }
+.upload-hint { font-size:0.65rem;color:var(--muted);opacity:0.6; }
+
+/* GALLERY GRID ADMIN */
+.gallery-admin-grid {
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.6rem;margin-top:0.8rem;
+}
+.gallery-thumb {
+  position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;border:1px solid var(--border);
+}
+.gallery-thumb img { width:100%;height:100%;object-fit:cover; }
+.gallery-thumb-remove {
+  position:absolute;top:3px;right:3px;background:rgba(0,0,0,0.7);border:none;
+  color:white;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:0.65rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.gallery-add-btn {
+  aspect-ratio:1;border:2px dashed var(--border);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  color:var(--muted);font-size:1.5rem;transition:all 0.2s;
+}
+.gallery-add-btn:hover { border-color:var(--gold-dim);color:var(--gold); }
+
+/* STORY EDITOR */
+.story-item {
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;margin-bottom:0.8rem;
+}
+.story-item-header {
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;
+}
+.story-item-year { font-weight:600;color:var(--gold);font-size:0.85rem; }
+
+/* GIFT ACCOUNTS */
+.gift-item {
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;margin-bottom:0.6rem;
+}
+
+/* STATS */
+.stats-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.8rem;margin-bottom:1.5rem; }
+.stat-card {
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;text-align:center;
+}
+.stat-num { font-size:2rem;font-weight:700;color:var(--gold);line-height:1; }
+.stat-label { font-size:0.65rem;color:var(--muted);letter-spacing:0.1em;margin-top:0.3rem; }
+
+/* TABLE */
+.data-table { width:100%;border-collapse:collapse;font-size:0.78rem; }
+.data-table th { background:var(--surface2);padding:0.6rem 0.8rem;text-align:left;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);border-bottom:1px solid var(--border); }
+.data-table td { padding:0.7rem 0.8rem;border-bottom:1px solid var(--border); }
+.data-table tr:hover td { background:var(--surface2); }
+.badge { display:inline-block;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.65rem; }
+.badge-green { background:rgba(76,175,80,0.15);color:#81C784; }
+.badge-red { background:rgba(229,115,115,0.15);color:#EF9A9A; }
+
+/* LINK */
+.link-box {
+  background:var(--bg);border:1px solid var(--border);border-radius:4px;
+  padding:0.6rem 0.8rem;font-size:0.78rem;color:var(--gold);
+  display:flex;align-items:center;justify-content:space-between;gap:0.5rem;
+  margin-bottom:0.5rem;
+}
+.link-text { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+
+/* TOAST */
+#toast {
+  position:fixed;bottom:1.5rem;right:1.5rem;background:var(--green);color:white;
+  padding:0.6rem 1.2rem;border-radius:4px;font-size:0.78rem;z-index:9999;
+  opacity:0;transition:opacity 0.3s;pointer-events:none;
+}
+#toast.show { opacity:1; }
+
+/* SAVE BAR */
+.save-bar {
+  position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  margin:-2rem -2rem 0;
+}
+.save-bar-msg { font-size:0.75rem;color:var(--muted); }
+
+/* PREVIEW LINK */
+.preview-bar {
+  display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem;
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);
+  padding:0.7rem 1rem;
+}
+.preview-bar-label { font-size:0.7rem;color:var(--muted);flex:1; }
+
+/* CHANGE PASSWORD */
+.danger-zone { border-color:rgba(229,115,115,0.2) !important; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">💍</div>
+    <div class="login-title">Admin Dashboard</div>
+    <div class="login-sub">Wedding Digital Invitation</div>
+    <input type="password" class="login-input" id="pwd-input" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Masuk</button>
+    <div class="login-err" id="login-err">Password salah. Coba lagi.</div>
+    <div style="margin-top:1rem;font-size:0.65rem;color:var(--muted)">Default: admin123</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <h1>💍 WeddingAdmin</h1>
+      <p>Kelola Undangan Digital</p>
+    </div>
+    <div class="sidebar-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('overview')"><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item" onclick="showPage('links')"><span class="nav-icon">🔗</span> Generator Link</div>
+
+    <div class="sidebar-section">Konten</div>
+    <div class="nav-item" onclick="showPage('identitas')"><span class="nav-icon">💑</span> Identitas Mempelai</div>
+    <div class="nav-item" onclick="showPage('acara')"><span class="nav-icon">📅</span> Jadwal Acara</div>
+    <div class="nav-item" onclick="showPage('foto')"><span class="nav-icon">📷</span> Foto & Gallery</div>
+    <div class="nav-item" onclick="showPage('story')"><span class="nav-icon">💬</span> Our Story</div>
+    <div class="nav-item" onclick="showPage('teks')"><span class="nav-icon">✍️</span> Teks & Ayat</div>
+    <div class="nav-item" onclick="showPage('gift')"><span class="nav-icon">🎁</span> Wedding Gift</div>
+    <div class="nav-item" onclick="showPage('music')"><span class="nav-icon">🎵</span> Musik</div>
+
+    <div class="sidebar-section">Tamu</div>
+    <div class="nav-item" onclick="showPage('ucapan')"><span class="nav-icon">💌</span> Ucapan & Doa</div>
+    <div class="nav-item" onclick="showPage('rsvp')"><span class="nav-icon">✅</span> RSVP</div>
+
+    <div class="sidebar-section">Sistem</div>
+    <div class="nav-item" onclick="showPage('settings')"><span class="nav-icon">⚙️</span> Pengaturan</div>
+    <div class="nav-item" onclick="doLogout()"><span class="nav-icon">🚪</span> Keluar</div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <main class="main-area">
+
+    <!-- OVERVIEW -->
+    <div id="page-overview" class="page-section active">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Selamat datang di admin panel undangan digital kamu</div>
+
+      <div class="preview-bar">
+        <span class="preview-bar-label">🌐 Preview undangan:</span>
+        <a href="/" target="_blank" class="btn btn-secondary btn-sm">Buka Undangan →</a>
+      </div>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="stat-ucapan">0</div><div class="stat-label">Total Ucapan</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-hadir">0</div><div class="stat-label">Konfirmasi Hadir</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-tidak">0</div><div class="stat-label">Tidak Hadir</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-gallery">0</div><div class="stat-label">Foto Gallery</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Ucapan Terbaru</div>
+        <div id="recent-ucapan"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Quick Actions</div>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="showPage('foto')">📷 Upload Foto</button>
+          <button class="btn btn-secondary" onclick="showPage('links')">🔗 Buat Link Tamu</button>
+          <button class="btn btn-secondary" onclick="exportData()">📥 Export Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINK GENERATOR -->
+    <div id="page-links" class="page-section">
+      <div class="page-title">Generator Link Tamu</div>
+      <div class="page-sub">Buat link personal untuk setiap tamu undangan</div>
+
+      <div class="card">
+        <div class="card-title">Buat Link Tamu</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Tamu</label>
+            <input type="text" id="link-guest" placeholder="contoh: Bapak Ahmad & Keluarga">
+          </div>
+          <div class="form-group">
+            <label>Base URL</label>
+            <input type="text" id="link-base" placeholder="https://namaundangan.vercel.app">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="generateLink()">Generate Link</button>
+
+        <div id="link-result" style="margin-top:1rem;display:none">
+          <div class="link-box">
+            <span class="link-text" id="link-output"></span>
+            <button class="btn btn-secondary btn-sm" onclick="copyLink()">Salin</button>
+          </div>
+          <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+            <a id="link-wa" href="#" target="_blank" class="btn btn-secondary btn-sm">📱 Bagikan WhatsApp</a>
+            <a id="link-open" href="#" target="_blank" class="btn btn-secondary btn-sm">🔗 Buka Preview</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Daftar Link Tersimpan</div>
+        <div id="saved-links-list"></div>
+        <button class="btn btn-secondary btn-sm" onclick="clearLinks()" style="margin-top:0.8rem">Hapus Semua</button>
+      </div>
+    </div>
+
+    <!-- IDENTITAS -->
+    <div id="page-identitas" class="page-section">
+      <div class="page-title">Identitas Mempelai</div>
+      <div class="page-sub">Edit nama dan informasi kedua mempelai</div>
+
+      <div class="card">
+        <div class="card-title">Mempelai 1 (Perempuan / Wanita)</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Panggilan</label>
+            <input type="text" id="groom_nick" placeholder="Nura">
+          </div>
+          <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="groom_full" placeholder="Nuraidah Areysha, S.E">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Keterangan Orang Tua (HTML diperbolehkan)</label>
+          <textarea id="groom_parent" placeholder="Putri Ketiga dari&#10;<b>Bapak ...</b>&#10;dan <b>Ibu ...</b>"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Instagram (opsional)</label>
+          <input type="text" id="groom_ig" placeholder="https://instagram.com/...">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Mempelai 2 (Laki-laki / Pria)</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Panggilan</label>
+            <input type="text" id="bride_nick" placeholder="Sondi">
+          </div>
+          <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="bride_full" placeholder="Sondi Ari Nugroho">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Keterangan Orang Tua (HTML diperbolehkan)</label>
+          <textarea id="bride_parent" placeholder="Putra Ketiga dari&#10;<b>Bapak ...</b>&#10;dan <b>Ibu ...</b>"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Instagram (opsional)</label>
+          <input type="text" id="bride_ig" placeholder="https://instagram.com/...">
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-bar-msg">Perubahan akan langsung tampil di undangan</span>
+        <button class="btn btn-primary" onclick="saveSection('identitas')">💾 Simpan Identitas</button>
+      </div>
+    </div>
+
+    <!-- ACARA -->
+    <div id="page-acara" class="page-section">
+      <div class="page-title">Jadwal Acara</div>
+      <div class="page-sub">Atur tanggal, waktu, dan lokasi acara pernikahan</div>
+
+      <div class="card">
+        <div class="card-title">Tanggal Pernikahan (untuk Countdown)</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tanggal</label>
+            <input type="date" id="wedding_date_input">
+          </div>
+          <div class="form-group">
+            <label>Jam</label>
+            <input type="time" id="wedding_time_input">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Akad Nikah</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hari & Tanggal (tampil)</label>
+            <input type="text" id="akad_day" placeholder="Selasa, 11 Juli 2023">
+          </div>
+          <div class="form-group">
+            <label>Waktu (tampil)</label>
+            <input type="text" id="akad_time" placeholder="Pukul 09.00 s.d 10.00 WIB">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Lokasi (HTML diperbolehkan)</label>
+          <textarea id="akad_place" style="min-height:60px" placeholder="Jl. ..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Link Google Maps</label>
+          <input type="url" id="akad_maps" placeholder="https://goo.gl/maps/...">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Resepsi</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Hari & Tanggal (tampil)</label>
+            <input type="text" id="resepsi_day" placeholder="Selasa, 11 Juli 2023">
+          </div>
+          <div class="form-group">
+            <label>Waktu (tampil)</label>
+            <input type="text" id="resepsi_time" placeholder="Pukul 11.00 WIB s.d Selesai">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Lokasi (HTML diperbolehkan)</label>
+          <textarea id="resepsi_place" style="min-height:60px" placeholder="Jl. ..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Link Google Maps</label>
+          <input type="url" id="resepsi_maps" placeholder="https://goo.gl/maps/...">
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-bar-msg">Countdown akan otomatis update</span>
+        <button class="btn btn-primary" onclick="saveSection('acara')">💾 Simpan Acara</button>
+      </div>
+    </div>
+
+    <!-- FOTO -->
+    <div id="page-foto" class="page-section">
+      <div class="page-title">Foto & Gallery</div>
+      <div class="page-sub">Upload foto mempelai, cover, dan gallery</div>
+
+      <div class="card">
+        <div class="card-title">Foto Cover (Background Layar Pembuka)</div>
+        <div class="photo-upload-area" onclick="document.getElementById('cover_photo_input').click()">
+          <img id="cover_photo_preview" class="photo-preview-rect" src="" alt="" style="display:none">
+          <div id="cover_photo_placeholder">
+            <div style="font-size:2rem">🖼️</div>
+            <div class="upload-label">Klik untuk upload foto cover</div>
+            <div class="upload-hint">Rekomendasi: landscape, min 1200x800px</div>
+          </div>
+        </div>
+        <input type="file" id="cover_photo_input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this,'cover_photo')">
+        <div style="margin-top:0.5rem;display:flex;gap:0.5rem">
+          <div class="form-group" style="flex:1;margin:0">
+            <label>Atau masukkan URL foto</label>
+            <input type="text" id="cover_photo_url" placeholder="https://..." onblur="applyPhotoUrl('cover_photo')">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Foto Mempelai 1</div>
+        <div class="photo-upload-area" onclick="document.getElementById('photo1_input').click()" style="max-width:150px">
+          <img id="photo1_preview" class="photo-preview" src="" alt="" style="display:none">
+          <div id="photo1_placeholder">
+            <div style="font-size:1.5rem">👰</div>
+            <div class="upload-label">Upload Foto</div>
+          </div>
+        </div>
+        <input type="file" id="photo1_input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this,'photo1')">
+        <div class="form-group" style="margin-top:0.5rem">
+          <label>Atau URL</label>
+          <input type="text" id="photo1_url" placeholder="https://..." onblur="applyPhotoUrl('photo1')">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Foto Mempelai 2</div>
+        <div class="photo-upload-area" onclick="document.getElementById('photo2_input').click()" style="max-width:150px">
+          <img id="photo2_preview" class="photo-preview" src="" alt="" style="display:none">
+          <div id="photo2_placeholder">
+            <div style="font-size:1.5rem">🤵</div>
+            <div class="upload-label">Upload Foto</div>
+          </div>
+        </div>
+        <input type="file" id="photo2_input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this,'photo2')">
+        <div class="form-group" style="margin-top:0.5rem">
+          <label>Atau URL</label>
+          <input type="text" id="photo2_url" placeholder="https://..." onblur="applyPhotoUrl('photo2')">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Gallery Foto (maks. 12)</div>
+        <div class="gallery-admin-grid" id="gallery-admin-grid"></div>
+        <input type="file" id="gallery_input" accept="image/*" multiple style="display:none" onchange="handleGalleryUpload(this)">
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="document.getElementById('gallery_input').click()">+ Upload Foto</button>
+          <button class="btn btn-danger btn-sm" onclick="clearGallery()">Hapus Semua</button>
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-bar-msg">Foto tersimpan di browser (base64)</span>
+        <button class="btn btn-primary" onclick="saveSection('foto')">💾 Simpan Foto</button>
+      </div>
+    </div>
+
+    <!-- STORY -->
+    <div id="page-story" class="page-section">
+      <div class="page-title">Our Story</div>
+      <div class="page-sub">Edit timeline perjalanan cinta mempelai</div>
+
+      <div id="story-editor"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="addStoryItem()">+ Tambah Momen</button>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-bar-msg">Urutan = urutan tampil di undangan</span>
+        <button class="btn btn-primary" onclick="saveSection('story')">💾 Simpan Story</button>
+      </div>
+    </div>
+
+    <!-- TEKS -->
+    <div id="page-teks" class="page-section">
+      <div class="page-title">Teks & Ayat</div>
+      <div class="page-sub">Edit kutipan ayat dan teks sambutan</div>
+
+      <div class="card">
+        <div class="card-title">Ayat / Kutipan</div>
+        <div class="form-group">
+          <label>Isi Ayat</label>
+          <textarea id="ayat" style="min-height:120px"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Sumber (e.g. Q.S Ar Rum : 21)</label>
+          <input type="text" id="ayat_source">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Teks Pembuka</div>
+        <div class="form-group">
+          <label>Kalimat Undangan</label>
+          <textarea id="greeting_text" style="min-height:80px"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Hero Background</div>
+        <div class="form-group">
+          <label>URL Background Hero (section utama setelah cover)</label>
+          <input type="text" id="hero_bg" placeholder="https://...">
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-bar-msg"></span>
+        <button class="btn btn-primary" onclick="saveSection('teks')">💾 Simpan Teks</button>
+      </div>
+    </div>
+
+    <!-- GIFT -->
+    <div id="page-gift" class="page-section">
+      <div class="page-title">Wedding Gift</div>
+      <div class="page-sub">Atur informasi rekening dan alamat pengiriman hadiah</div>
+
+      <div class="card">
+        <div class="card-title">Rekening Bank / E-Wallet</div>
+        <div id="gift-accounts-editor"></div>
+        <button class="btn btn-secondary" onclick="addGiftAccount()" style="margin-top:0.8rem">+ Tambah Rekening</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Alamat Pengiriman Hadiah</div>
+        <div class="form-group">
+          <textarea id="gift_address" style="min-height:100px" placeholder="Nama: ...\nAlamat: ..."></textarea>
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-bar-msg"></span>
+        <button class="btn btn-primary" onclick="saveSection('gift')">💾 Simpan Gift</button>
+      </div>
+    </div>
+
+    <!-- MUSIC -->
+    <div id="page-music" class="page-section">
+      <div class="page-title">Musik Latar</div>
+      <div class="page-sub">URL musik yang akan diputar saat undangan dibuka</div>
+
+      <div class="card">
+        <div class="card-title">Musik Latar</div>
+        <div class="form-group">
+          <label>URL File MP3</label>
+          <input type="url" id="music_url" placeholder="https://.../lagu.mp3">
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem">
+          💡 Tip: Upload file ke Google Drive, Dropbox, atau server, lalu masukkan direct link-nya. Musik akan diputar otomatis saat tamu menekan "Buka Undangan".
+        </div>
+        <div class="form-group" style="margin-top:0.8rem">
+          <label>Preview</label>
+          <audio id="music-preview" controls style="width:100%;margin-top:0.3rem"></audio>
+          <button class="btn btn-secondary btn-sm" onclick="previewMusic()" style="margin-top:0.5rem">🔊 Test Musik</button>
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-bar-msg"></span>
+        <button class="btn btn-primary" onclick="saveSection('music')">💾 Simpan Musik</button>
+      </div>
+    </div>
+
+    <!-- UCAPAN -->
+    <div id="page-ucapan" class="page-section">
+      <div class="page-title">Ucapan & Doa</div>
+      <div class="page-sub">Semua ucapan dari tamu undangan</div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
+          <div class="card-title" style="margin:0">Daftar Ucapan</div>
+          <button class="btn btn-danger btn-sm" onclick="clearUcapan()">Hapus Semua</button>
+        </div>
+        <div id="ucapan-admin-table"></div>
+      </div>
+    </div>
+
+    <!-- RSVP -->
+    <div id="page-rsvp" class="page-section">
+      <div class="page-title">RSVP</div>
+      <div class="page-sub">Data konfirmasi kehadiran tamu</div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
+          <div class="card-title" style="margin:0">Daftar RSVP</div>
+          <div style="display:flex;gap:0.5rem">
+            <button class="btn btn-secondary btn-sm" onclick="exportRsvp()">📥 Export</button>
+            <button class="btn btn-danger btn-sm" onclick="clearRsvp()">Hapus Semua</button>
+          </div>
+        </div>
+        <div id="rsvp-admin-table"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="page-settings" class="page-section">
+      <div class="page-title">Pengaturan</div>
+      <div class="page-sub">Konfigurasi sistem admin</div>
+
+      <div class="card">
+        <div class="card-title">Ganti Password Admin</div>
+        <div class="form-group">
+          <label>Password Lama</label>
+          <input type="password" id="pwd-old" placeholder="Password sekarang">
+        </div>
+        <div class="form-group">
+          <label>Password Baru</label>
+          <input type="password" id="pwd-new" placeholder="Password baru (min 6 karakter)">
+        </div>
+        <div class="form-group">
+          <label>Konfirmasi Password Baru</label>
+          <input type="password" id="pwd-confirm" placeholder="Ulangi password baru">
+        </div>
+        <button class="btn btn-primary" onclick="changePassword()">Ganti Password</button>
+      </div>
+
+      <div class="card danger-zone" style="border-color:rgba(229,115,115,0.3)">
+        <div class="card-title" style="color:var(--red)">Danger Zone</div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.8rem">Hapus semua data konfigurasi dan reset ke default. TIDAK BISA DIBATALKAN.</p>
+        <button class="btn btn-danger" onclick="resetAll()">⚠️ Reset Semua Data</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Backup & Restore</div>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="exportData()">📥 Export Semua Data</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">📤 Import Data</button>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<div id="toast">✓ Tersimpan!</div>
+
+<script>
+// ========================
+// AUTH
+// ========================
+const DEFAULT_PWD = 'admin123';
+function getPassword() { return localStorage.getItem('admin_pwd') || DEFAULT_PWD; }
+
+function doLogin() {
+  const val = document.getElementById('pwd-input').value;
+  if (val === getPassword()) {
+    localStorage.setItem('admin_auth', 'true');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadAllFields();
+    refreshStats();
+    renderAdminTables();
+    renderGalleryAdmin();
+    renderStoryEditor();
+    renderGiftEditor();
+    renderSavedLinks();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+  }
+}
+function doLogout() {
+  localStorage.removeItem('admin_auth');
+  location.reload();
+}
+document.getElementById('pwd-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+if (localStorage.getItem('admin_auth') === 'true') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  loadAllFields();
+  refreshStats();
+  renderAdminTables();
+  renderGalleryAdmin();
+  renderStoryEditor();
+  renderGiftEditor();
+  renderSavedLinks();
+}
+
+// ========================
+// NAV
+// ========================
+function showPage(id) {
+  document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'ucapan') renderAdminTables();
+  if (id === 'rsvp') renderAdminTables();
+  if (id === 'overview') refreshStats();
+}
+
+// ========================
+// CONFIG
+// ========================
+const defaultConfig = {
+  groom_nick:'Nura', groom_full:'Nuraidah Areysha, S.E',
+  bride_nick:'Sondi', bride_full:'Sondi Ari Nugroho',
+  groom_parent:'Putri Ketiga dari<br><b>Bapak Alm. Uwep Rukmana</b><br>dan <b>Ibu Ai Lasmiati</b>',
+  bride_parent:'Putra Ketiga dari<br><b>Bapak Alm. Supriyatna</b><br>dan <b>Ibu Utamah</b>',
+  groom_ig:'', bride_ig:'',
+  akad_day:'Selasa, 11 Juli 2023', akad_time:'Pukul 09.00 s.d 10.00 WIB',
+  resepsi_day:'Selasa, 11 Juli 2023', resepsi_time:'Pukul 11.00 WIB s.d Selesai',
+  wedding_date:'2023-07-11T09:00:00',
+  akad_place:'Jl. Cihurang Kp. Selakopi<br>RT.02/06 Kec. Simpenan,<br>Desa Cidadap, Kab. Sukabumi',
+  akad_maps:'https://goo.gl/maps/hp8SLBdUFTfwuChGA',
+  resepsi_place:'Jl. Cihurang Kp. Selakopi<br>RT.02/06 Kec. Simpenan,<br>Desa Cidadap, Kab. Sukabumi',
+  resepsi_maps:'https://goo.gl/maps/hp8SLBdUFTfwuChGA',
+  ayat:'Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang.',
+  ayat_source:'(Q.S Ar Rum : 21)',
+  greeting_text:'Dengan memohon Rahmat dan Ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dalam pernikahan kami',
+  photo1:'', photo2:'', cover_photo:'',
+  gallery:[],
+  story:[
+    {year:'2019', text:'Dipertemukan oleh takdir secara tidak sengaja.', photo:''},
+    {year:'2021', text:'Setelah 2 tahun berlalu, kembali memulai komunikasi secara intens.', photo:''},
+    {year:'Maret 2022', text:'Datang bersama keluarga untuk melamar.', photo:''}
+  ],
+  gift_accounts:[
+    {bank:'BCA', norek:'0000000000', nama:'Nuraidah Areysha'},
+    {bank:'GoPay', norek:'0000000000', nama:'Nuraidah Areysha'}
+  ],
+  gift_address:'Nama: Nuraidah Areysha\nAlamat: Jl. Cihurang Kp. Selakopi\nRT.02/06 Kec. Simpenan,\nDesa Cidadap, Kab. Sukabumi',
+  music_url:'',
+  hero_bg:'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80'
+};
+
+function getConfig() {
+  try { return {...defaultConfig, ...JSON.parse(localStorage.getItem('wedding_config')||'{}')}; }
+  catch { return defaultConfig; }
+}
+function saveConfig(cfg) { localStorage.setItem('wedding_config', JSON.stringify(cfg)); }
+
+function loadAllFields() {
+  const c = getConfig();
+  // Identitas
+  setVal('groom_nick', c.groom_nick); setVal('groom_full', c.groom_full);
+  setVal('groom_parent', c.groom_parent); setVal('groom_ig', c.groom_ig||'');
+  setVal('bride_nick', c.bride_nick); setVal('bride_full', c.bride_full);
+  setVal('bride_parent', c.bride_parent); setVal('bride_ig', c.bride_ig||'');
+  // Acara
+  const wdate = c.wedding_date.split('T');
+  setVal('wedding_date_input', wdate[0]||''); setVal('wedding_time_input', wdate[1]||'');
+  setVal('akad_day', c.akad_day); setVal('akad_time', c.akad_time);
+  setVal('akad_place', c.akad_place); setVal('akad_maps', c.akad_maps);
+  setVal('resepsi_day', c.resepsi_day); setVal('resepsi_time', c.resepsi_time);
+  setVal('resepsi_place', c.resepsi_place); setVal('resepsi_maps', c.resepsi_maps);
+  // Teks
+  setVal('ayat', c.ayat); setVal('ayat_source', c.ayat_source);
+  setVal('greeting_text', c.greeting_text); setVal('hero_bg', c.hero_bg||'');
+  // Gift
+  setVal('gift_address', c.gift_address);
+  // Music
+  setVal('music_url', c.music_url||'');
+  // Photos preview
+  if (c.photo1) showPhotoPreview('photo1', c.photo1);
+  if (c.photo2) showPhotoPreview('photo2', c.photo2);
+  if (c.cover_photo) showPhotoPReviewRect('cover_photo', c.cover_photo);
+}
+
+function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
+function getVal(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+
+// ========================
+// SAVE SECTIONS
+// ========================
+function saveSection(section) {
+  const c = getConfig();
+  if (section === 'identitas') {
+    c.groom_nick = getVal('groom_nick'); c.groom_full = getVal('groom_full');
+    c.groom_parent = getVal('groom_parent'); c.groom_ig = getVal('groom_ig');
+    c.bride_nick = getVal('bride_nick'); c.bride_full = getVal('bride_full');
+    c.bride_parent = getVal('bride_parent'); c.bride_ig = getVal('bride_ig');
+  } else if (section === 'acara') {
+    const d = getVal('wedding_date_input'); const t = getVal('wedding_time_input') || '09:00';
+    c.wedding_date = d ? `${d}T${t}:00` : c.wedding_date;
+    c.akad_day = getVal('akad_day'); c.akad_time = getVal('akad_time');
+    c.akad_place = getVal('akad_place'); c.akad_maps = getVal('akad_maps');
+    c.resepsi_day = getVal('resepsi_day'); c.resepsi_time = getVal('resepsi_time');
+    c.resepsi_place = getVal('resepsi_place'); c.resepsi_maps = getVal('resepsi_maps');
+  } else if (section === 'teks') {
+    c.ayat = getVal('ayat'); c.ayat_source = getVal('ayat_source');
+    c.greeting_text = getVal('greeting_text'); c.hero_bg = getVal('hero_bg');
+  } else if (section === 'gift') {
+    c.gift_address = getVal('gift_address');
+    // gift accounts saved via addGiftAccount inline
+  } else if (section === 'music') {
+    c.music_url = getVal('music_url');
+  } else if (section === 'foto') {
+    // photos already saved to c during upload
+  } else if (section === 'story') {
+    // collected from story editor
+    const items = document.querySelectorAll('.story-item');
+    c.story = Array.from(items).map(item => ({
+      year: item.querySelector('.story-year').value,
+      text: item.querySelector('.story-text').value,
+      photo: item.querySelector('.story-photo-val').value
+    }));
+  }
+  saveConfig(c);
+  toast('✓ Disimpan!');
+  refreshStats();
+}
+
+// ========================
+// PHOTO UPLOAD
+// ========================
+function handlePhotoUpload(input, key) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = e.target.result;
+    const c = getConfig(); c[key] = data; saveConfig(c);
+    if (key === 'cover_photo') showPhotoPReviewRect(key, data);
+    else showPhotoPreview(key, data);
+    toast('✓ Foto diupload!');
+  };
+  reader.readAsDataURL(file);
+}
+function showPhotoPreview(key, src) {
+  const prev = document.getElementById(key+'_preview');
+  const ph = document.getElementById(key+'_placeholder');
+  if (prev) { prev.src = src; prev.style.display = 'block'; }
+  if (ph) ph.style.display = 'none';
+}
+function showPhotoPReviewRect(key, src) {
+  const prev = document.getElementById(key+'_preview');
+  const ph = document.getElementById(key+'_placeholder');
+  if (prev) { prev.src = src; prev.style.display = 'block'; }
+  if (ph) ph.style.display = 'none';
+}
+function applyPhotoUrl(key) {
+  const url = getVal(key+'_url'); if (!url) return;
+  const c = getConfig(); c[key] = url; saveConfig(c);
+  if (key === 'cover_photo') showPhotoPReviewRect(key, url);
+  else showPhotoPreview(key, url);
+}
+
+// ========================
+// GALLERY
+// ========================
+function handleGalleryUpload(input) {
+  const files = Array.from(input.files);
+  const c = getConfig();
+  let loaded = 0;
+  files.forEach(file => {
+    if (c.gallery.length >= 12) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      c.gallery.push(e.target.result);
+      loaded++;
+      if (loaded === files.length) { saveConfig(c); renderGalleryAdmin(); toast('✓ Foto ditambahkan!'); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function renderGalleryAdmin() {
+  const c = getConfig();
+  const grid = document.getElementById('gallery-admin-grid');
+  if (!grid) return;
+  let html = c.gallery.map((src, i) => `
+    <div class="gallery-thumb">
+      <img src="${src}" alt="">
+      <button class="gallery-thumb-remove" onclick="removeGalleryItem(${i})">✕</button>
+    </div>
+  `).join('');
+  if (c.gallery.length < 12) html += `<div class="gallery-add-btn" onclick="document.getElementById('gallery_input').click()">+</div>`;
+  grid.innerHTML = html;
+}
+function removeGalleryItem(i) {
+  const c = getConfig(); c.gallery.splice(i, 1); saveConfig(c); renderGalleryAdmin(); toast('Foto dihapus');
+}
+function clearGallery() {
+  if (!confirm('Hapus semua foto gallery?')) return;
+  const c = getConfig(); c.gallery = []; saveConfig(c); renderGalleryAdmin(); toast('Gallery dikosongkan');
+}
+
+// ========================
+// STORY EDITOR
+// ========================
+function renderStoryEditor() {
+  const c = getConfig();
+  const container = document.getElementById('story-editor');
+  if (!container) return;
+  container.innerHTML = c.story.map((s, i) => storyItemHtml(s, i)).join('');
+}
+function storyItemHtml(s, i) {
+  return `
+    <div class="story-item" id="story-item-${i}">
+      <div class="story-item-header">
+        <span class="story-item-year">Momen #${i+1}</span>
+        <button class="btn btn-danger btn-sm" onclick="removeStoryItem(${i})">Hapus</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tahun / Waktu</label>
+          <input type="text" class="story-year" value="${esc(s.year)}" placeholder="2023">
+        </div>
+        <div class="form-group">
+          <label>Foto URL (opsional)</label>
+          <input type="text" class="story-photo-val" value="${esc(s.photo||'')}" placeholder="https://..." onblur="updateStoryPhotoPreview(this)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Cerita</label>
+        <textarea class="story-text" style="min-height:70px">${esc(s.text)}</textarea>
+      </div>
+      <div class="photo-upload-area" onclick="triggerStoryPhoto(${i})" style="max-width:100px;padding:0.8rem">
+        ${s.photo ? `<img src="${s.photo}" style="width:80px;height:100px;object-fit:cover">` : '<div style="font-size:1.2rem">📷</div><div class="upload-label">Upload</div>'}
+      </div>
+      <input type="file" id="story-file-${i}" accept="image/*" style="display:none" onchange="handleStoryPhoto(this,${i})">
+    </div>
+  `;
+}
+function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function addStoryItem() {
+  const c = getConfig();
+  c.story.push({year:'', text:'', photo:''});
+  saveConfig(c); renderStoryEditor();
+}
+function removeStoryItem(i) {
+  const c = getConfig(); c.story.splice(i,1); saveConfig(c); renderStoryEditor();
+}
+function triggerStoryPhoto(i) { document.getElementById('story-file-'+i)?.click(); }
+function handleStoryPhoto(input, i) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const c = getConfig();
+    c.story[i].photo = e.target.result;
+    saveConfig(c); renderStoryEditor(); toast('Foto story diupload!');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========================
+// GIFT EDITOR
+// ========================
+function renderGiftEditor() {
+  const c = getConfig();
+  const container = document.getElementById('gift-accounts-editor');
+  if (!container) return;
+  container.innerHTML = c.gift_accounts.map((a,i) => `
+    <div class="gift-item">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bank / E-Wallet</label>
+          <input type="text" class="gift-bank-${i}" value="${esc(a.bank)}" placeholder="BCA, Mandiri, GoPay, OVO...">
+        </div>
+        <div class="form-group">
+          <label>Nomor Rekening</label>
+          <input type="text" class="gift-norek-${i}" value="${esc(a.norek)}" placeholder="0000000000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Atas Nama</label>
+          <input type="text" class="gift-nama-${i}" value="${esc(a.nama)}" placeholder="Nama pemilik rekening">
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:0.8rem">
+          <button class="btn btn-danger btn-sm" onclick="removeGiftAccount(${i})">Hapus</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function addGiftAccount() {
+  const c = getConfig();
+  // Save current state first
+  saveGiftAccountsFromDom();
+  c.gift_accounts.push({bank:'', norek:'', nama:''});
+  saveConfig(c); renderGiftEditor();
+}
+function removeGiftAccount(i) {
+  saveGiftAccountsFromDom();
+  const c = getConfig(); c.gift_accounts.splice(i,1); saveConfig(c); renderGiftEditor();
+}
+function saveGiftAccountsFromDom() {
+  const c = getConfig();
+  c.gift_accounts = c.gift_accounts.map((a,i) => ({
+    bank: document.querySelector(`.gift-bank-${i}`)?.value || a.bank,
+    norek: document.querySelector(`.gift-norek-${i}`)?.value || a.norek,
+    nama: document.querySelector(`.gift-nama-${i}`)?.value || a.nama
+  }));
+  saveConfig(c);
+}
+// Override save for gift
+const origSaveSection = window.saveSection;
+window.saveSection = function(section) {
+  if (section === 'gift') {
+    saveGiftAccountsFromDom();
+    const c = getConfig();
+    c.gift_address = getVal('gift_address');
+    saveConfig(c);
+    toast('✓ Disimpan!');
+    return;
+  }
+  origSaveSection(section);
+};
+
+// ========================
+// LINK GENERATOR
+// ========================
+let savedLinks = [];
+function loadSavedLinks() {
+  try { savedLinks = JSON.parse(localStorage.getItem('saved_links')||'[]'); } catch { savedLinks=[]; }
+}
+function saveLinksList() { localStorage.setItem('saved_links', JSON.stringify(savedLinks)); }
+function generateLink() {
+  const guest = getVal('link-guest').trim();
+  const base = getVal('link-base').trim() || location.origin;
+  if (!guest) { toast('⚠️ Isi nama tamu dulu!'); return; }
+  const url = `${base}?to=${encodeURIComponent(guest)}`;
+  document.getElementById('link-output').textContent = url;
+  document.getElementById('link-result').style.display = 'block';
+  document.getElementById('link-open').href = url;
+  document.getElementById('link-wa').href = `https://api.whatsapp.com/send?text=${encodeURIComponent('Kepada Yth. '+guest+'\n\nKami mengundang Anda ke pernikahan kami 💍\n\n'+url)}`;
+  // Save
+  loadSavedLinks();
+  if (!savedLinks.find(l => l.url === url)) {
+    savedLinks.unshift({guest, url, time: Date.now()});
+    saveLinksList();
+    renderSavedLinks();
+  }
+}
+function copyLink() {
+  const url = document.getElementById('link-output').textContent;
+  navigator.clipboard?.writeText(url).then(() => toast('Link disalin!'));
+}
+function renderSavedLinks() {
+  loadSavedLinks();
+  const container = document.getElementById('saved-links-list');
+  if (!container) return;
+  if (!savedLinks.length) { container.innerHTML = '<p style="font-size:0.75rem;color:var(--muted)">Belum ada link tersimpan</p>'; return; }
+  container.innerHTML = savedLinks.map((l,i) => `
+    <div style="margin-bottom:0.5rem">
+      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:0.2rem">${l.guest}</div>
+      <div class="link-box">
+        <span class="link-text">${l.url}</span>
+        <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard?.writeText('${l.url}').then(()=>toast('Disalin!'))">Salin</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteLink(${i})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+function deleteLink(i) {
+  loadSavedLinks(); savedLinks.splice(i,1); saveLinksList(); renderSavedLinks();
+}
+function clearLinks() {
+  if (!confirm('Hapus semua link tersimpan?')) return;
+  savedLinks=[]; saveLinksList(); renderSavedLinks();
+}
+
+// ========================
+// STATS & TABLES
+// ========================
+function getUcapan() { try { return JSON.parse(localStorage.getItem('wedding_ucapan')||'[]'); } catch { return []; } }
+function getRsvp() { try { return JSON.parse(localStorage.getItem('wedding_rsvp')||'[]'); } catch { return []; } }
+
+function refreshStats() {
+  const ucapan = getUcapan();
+  const rsvp = getRsvp();
+  const c = getConfig();
+  const hadir = rsvp.filter(r => r.hadir === 'hadir').length;
+  const tidak = rsvp.filter(r => r.hadir === 'tidak').length;
+  setInner('stat-ucapan', ucapan.length);
+  setInner('stat-hadir', hadir);
+  setInner('stat-tidak', tidak);
+  setInner('stat-gallery', (c.gallery||[]).length);
+
+  const recent = ucapan.slice(-3).reverse();
+  const rEl = document.getElementById('recent-ucapan');
+  if (rEl) {
+    if (!recent.length) { rEl.innerHTML = '<p style="font-size:0.75rem;color:var(--muted)">Belum ada ucapan masuk</p>'; return; }
+    rEl.innerHTML = recent.map(u => `
+      <div style="padding:0.6rem 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:start;gap:1rem">
+        <div>
+          <div style="font-weight:500;font-size:0.82rem">${esc2(u.name)}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem">${esc2(u.msg)}</div>
+        </div>
+        <span class="badge ${u.hadir==='hadir'?'badge-green':'badge-red'}">${u.hadir==='hadir'?'Hadir':u.hadir==='tidak'?'Tidak':'—'}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function renderAdminTables() {
+  const ucapan = getUcapan();
+  const rsvp = getRsvp();
+
+  const uEl = document.getElementById('ucapan-admin-table');
+  if (uEl) {
+    if (!ucapan.length) { uEl.innerHTML='<p style="font-size:0.75rem;color:var(--muted)">Belum ada ucapan</p>'; }
+    else uEl.innerHTML = `<table class="data-table"><thead><tr><th>#</th><th>Nama</th><th>Ucapan</th><th>Status</th></tr></thead><tbody>${ucapan.map((u,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td>${esc2(u.name)}</td><td style="max-width:300px">${esc2(u.msg)}</td><td><span class="badge ${u.hadir==='hadir'?'badge-green':'badge-red'}">${u.hadir==='hadir'?'Hadir':u.hadir==='tidak'?'Tidak':'—'}</span></td></tr>`).join('')}</tbody></table>`;
+  }
+
+  const rEl = document.getElementById('rsvp-admin-table');
+  if (rEl) {
+    if (!rsvp.length) { rEl.innerHTML='<p style="font-size:0.75rem;color:var(--muted)">Belum ada RSVP</p>'; }
+    else rEl.innerHTML = `<table class="data-table"><thead><tr><th>#</th><th>Nama</th><th>Status</th><th>Jumlah Tamu</th></tr></thead><tbody>${rsvp.map((r,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td>${esc2(r.name)}</td><td><span class="badge ${r.hadir==='hadir'?'badge-green':'badge-red'}">${r.hadir==='hadir'?'Hadir':'Tidak Hadir'}</span></td><td>${r.jumlah||1}</td></tr>`).join('')}</tbody></table>`;
+  }
+}
+
+function esc2(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function setInner(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+
+// ========================
+// DATA MANAGEMENT
+// ========================
+function clearUcapan() {
+  if (!confirm('Hapus semua ucapan?')) return;
+  localStorage.removeItem('wedding_ucapan'); renderAdminTables(); refreshStats(); toast('Ucapan dihapus');
+}
+function clearRsvp() {
+  if (!confirm('Hapus semua RSVP?')) return;
+  localStorage.removeItem('wedding_rsvp'); renderAdminTables(); refreshStats(); toast('RSVP dihapus');
+}
+
+function exportData() {
+  const data = {
+    config: getConfig(),
+    ucapan: getUcapan(),
+    rsvp: getRsvp(),
+    links: savedLinks,
+    exported: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `wedding-backup-${Date.now()}.json`;
+  a.click();
+  toast('✓ Data diekspor!');
+}
+
+function exportRsvp() {
+  const rsvp = getRsvp();
+  const rows = ['No,Nama,Status,Jumlah Tamu', ...rsvp.map((r,i) => `${i+1},"${r.name}","${r.hadir==='hadir'?'Hadir':'Tidak Hadir'}",${r.jumlah||1}`)];
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rsvp.csv';
+  a.click();
+}
+
+function importData(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.config) saveConfig({...defaultConfig,...data.config});
+      if (data.ucapan) localStorage.setItem('wedding_ucapan', JSON.stringify(data.ucapan));
+      if (data.rsvp) localStorage.setItem('wedding_rsvp', JSON.stringify(data.rsvp));
+      loadAllFields(); renderGalleryAdmin(); renderStoryEditor(); renderGiftEditor();
+      refreshStats(); renderAdminTables();
+      toast('✓ Data diimport!');
+    } catch { toast('⚠️ File tidak valid'); }
+  };
+  reader.readAsText(file);
+}
+
+function resetAll() {
+  if (!confirm('HAPUS SEMUA DATA? Tidak bisa dibatalkan!')) return;
+  if (!confirm('Yakin? Semua konfigurasi, foto, ucapan akan hilang!')) return;
+  ['wedding_config','wedding_ucapan','wedding_rsvp','saved_links'].forEach(k => localStorage.removeItem(k));
+  location.reload();
+}
+
+// ========================
+// PASSWORD
+// ========================
+function changePassword() {
+  const old = getVal('pwd-old');
+  const nw = getVal('pwd-new');
+  const cf = getVal('pwd-confirm');
+  if (old !== getPassword()) { toast('⚠️ Password lama salah'); return; }
+  if (nw.length < 6) { toast('⚠️ Password minimal 6 karakter'); return; }
+  if (nw !== cf) { toast('⚠️ Konfirmasi password tidak cocok'); return; }
+  localStorage.setItem('admin_pwd', nw);
+  setVal('pwd-old',''); setVal('pwd-new',''); setVal('pwd-confirm','');
+  toast('✓ Password berhasil diganti!');
+}
+
+// ========================
+// MUSIC
+// ========================
+function previewMusic() {
+  const url = getVal('music_url');
+  const audio = document.getElementById('music-preview');
+  audio.src = url;
+  audio.play();
+}
+
+// ========================
+// TOAST
+// ========================
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ========================
+// INIT SAVED LINKS
+// ========================
+loadSavedLinks();
+</script>
+</body>
+</html>
