@@ -724,7 +724,24 @@ select option { background:var(--surface); }
 
 <div id="toast">✓ Tersimpan!</div>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
 <script>
+const firebaseConfig = {
+  apiKey: "GANTI_API_KEY",
+  authDomain: "GANTI_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://GANTI_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "GANTI_PROJECT_ID",
+  storageBucket: "GANTI_PROJECT_ID.appspot.com",
+  messagingSenderId: "GANTI_SENDER_ID",
+  appId: "GANTI_APP_ID"
+};
+const firebaseEnabled = firebaseConfig.apiKey !== "GANTI_API_KEY";
+let rtdb = null;
+if (firebaseEnabled) {
+  firebase.initializeApp(firebaseConfig);
+  rtdb = firebase.database();
+}
 // ========================
 // AUTH
 // ========================
@@ -756,13 +773,6 @@ document.getElementById('pwd-input').addEventListener('keydown', e => { if(e.key
 if (localStorage.getItem('admin_auth') === 'true') {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
-  loadAllFields();
-  refreshStats();
-  renderAdminTables();
-  renderGalleryAdmin();
-  renderStoryEditor();
-  renderGiftEditor();
-  renderSavedLinks();
 }
 
 // ========================
@@ -818,6 +828,15 @@ function getConfig() {
   catch { return defaultConfig; }
 }
 function saveConfig(cfg) { localStorage.setItem('wedding_config', JSON.stringify(cfg)); }
+async function syncConfigFromFirebase() {
+  if (!rtdb) return;
+  const snap = await rtdb.ref('wedding/config').once('value');
+  if (snap.exists()) localStorage.setItem('wedding_config', JSON.stringify(snap.val()));
+}
+function saveConfigRemote(cfg) {
+  if (!rtdb) return;
+  rtdb.ref('wedding/config').set(cfg);
+}
 
 function loadAllFields() {
   const c = getConfig();
@@ -886,6 +905,7 @@ function saveSection(section) {
     }));
   }
   saveConfig(c);
+  saveConfigRemote(c);
   toast('✓ Disimpan!');
   refreshStats();
 }
@@ -1144,6 +1164,15 @@ function clearLinks() {
 // ========================
 function getUcapan() { try { return JSON.parse(localStorage.getItem('wedding_ucapan')||'[]'); } catch { return []; } }
 function getRsvp() { try { return JSON.parse(localStorage.getItem('wedding_rsvp')||'[]'); } catch { return []; } }
+async function syncGuestDataFromFirebase() {
+  if (!rtdb) return;
+  const [uSnap, rSnap] = await Promise.all([
+    rtdb.ref('wedding/ucapan').once('value'),
+    rtdb.ref('wedding/rsvp').once('value')
+  ]);
+  localStorage.setItem('wedding_ucapan', JSON.stringify(uSnap.exists() ? uSnap.val() : []));
+  localStorage.setItem('wedding_rsvp', JSON.stringify(rSnap.exists() ? rSnap.val() : []));
+}
 
 function refreshStats() {
   const ucapan = getUcapan();
@@ -1198,10 +1227,12 @@ function setInner(id, val) { const el = document.getElementById(id); if (el) el.
 function clearUcapan() {
   if (!confirm('Hapus semua ucapan?')) return;
   localStorage.removeItem('wedding_ucapan'); renderAdminTables(); refreshStats(); toast('Ucapan dihapus');
+  if (rtdb) rtdb.ref('wedding/ucapan').set([]);
 }
 function clearRsvp() {
   if (!confirm('Hapus semua RSVP?')) return;
   localStorage.removeItem('wedding_rsvp'); renderAdminTables(); refreshStats(); toast('RSVP dihapus');
+  if (rtdb) rtdb.ref('wedding/rsvp').set([]);
 }
 
 function exportData() {
@@ -1290,9 +1321,23 @@ function toast(msg) {
 }
 
 // ========================
-// INIT SAVED LINKS
+// INIT
 // ========================
-loadSavedLinks();
+async function initAdmin() {
+  await syncConfigFromFirebase();
+  await syncGuestDataFromFirebase();
+  if (localStorage.getItem('admin_auth') === 'true') {
+    loadAllFields();
+    refreshStats();
+    renderAdminTables();
+    renderGalleryAdmin();
+    renderStoryEditor();
+    renderGiftEditor();
+    renderSavedLinks();
+  }
+  loadSavedLinks();
+}
+initAdmin();
 </script>
 </body>
 </html>
