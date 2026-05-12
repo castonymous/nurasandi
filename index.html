@@ -1196,7 +1196,24 @@ section {
 <!-- TOAST -->
 <div id="toast" style="position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:var(--burgundy);color:white;padding:0.7rem 1.5rem;border-radius:3px;font-size:0.75rem;letter-spacing:0.1em;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none">Berhasil disalin!</div>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
 <script>
+const firebaseConfig = {
+  apiKey: "GANTI_API_KEY",
+  authDomain: "GANTI_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://GANTI_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "GANTI_PROJECT_ID",
+  storageBucket: "GANTI_PROJECT_ID.appspot.com",
+  messagingSenderId: "GANTI_SENDER_ID",
+  appId: "GANTI_APP_ID"
+};
+const firebaseEnabled = firebaseConfig.apiKey !== "GANTI_API_KEY";
+let rtdb = null;
+if (firebaseEnabled) {
+  firebase.initializeApp(firebaseConfig);
+  rtdb = firebase.database();
+}
 // ============================
 // CONFIG — loaded from localStorage (set by admin dashboard)
 // ============================
@@ -1247,6 +1264,11 @@ function getConfig() {
     return saved ? { ...defaultConfig, ...JSON.parse(saved) } : defaultConfig;
   } catch { return defaultConfig; }
 }
+async function syncConfigFromFirebase() {
+  if (!rtdb) return;
+  const snap = await rtdb.ref('wedding/config').once('value');
+  if (snap.exists()) localStorage.setItem('wedding_config', JSON.stringify(snap.val()));
+}
 
 // ============================
 // DATA STORES (ucapan, rsvp)
@@ -1259,6 +1281,19 @@ function getRsvp() {
   try { return JSON.parse(localStorage.getItem('wedding_rsvp') || '[]'); } catch { return []; }
 }
 function saveRsvp(arr) { localStorage.setItem('wedding_rsvp', JSON.stringify(arr)); }
+async function pushFirebase(path, data) {
+  if (!rtdb) return;
+  await rtdb.ref(path).set(data);
+}
+async function syncMessagesFromFirebase() {
+  if (!rtdb) return;
+  const [uSnap, rSnap] = await Promise.all([
+    rtdb.ref('wedding/ucapan').once('value'),
+    rtdb.ref('wedding/rsvp').once('value')
+  ]);
+  localStorage.setItem('wedding_ucapan', JSON.stringify(uSnap.exists() ? uSnap.val() : []));
+  localStorage.setItem('wedding_rsvp', JSON.stringify(rSnap.exists() ? rSnap.val() : []));
+}
 
 // ============================
 // RENDER
@@ -1544,7 +1579,7 @@ function showToast() {
 // ============================
 // UCAPAN SUBMIT
 // ============================
-function submitUcapan(e) {
+async function submitUcapan(e) {
   e.preventDefault();
   const name = document.getElementById('uc-name').value.trim();
   const msg = document.getElementById('uc-msg').value.trim();
@@ -1552,6 +1587,7 @@ function submitUcapan(e) {
   const arr = getUcapan();
   arr.push({ name, msg, hadir: '', time: Date.now() });
   saveUcapan(arr);
+  await pushFirebase('wedding/ucapan', arr);
   document.getElementById('uc-name').value = '';
   document.getElementById('uc-msg').value = '';
   renderUcapanList();
@@ -1561,7 +1597,7 @@ function submitUcapan(e) {
 // ============================
 // RSVP SUBMIT
 // ============================
-function submitRSVP(e) {
+async function submitRSVP(e) {
   e.preventDefault();
   const name = document.getElementById('rsvp-name').value.trim();
   const hadir = document.getElementById('rsvp-hadir').value;
@@ -1570,10 +1606,12 @@ function submitRSVP(e) {
   const arr = getRsvp();
   arr.push({ name, hadir, jumlah, time: Date.now() });
   saveRsvp(arr);
+  await pushFirebase('wedding/rsvp', arr);
   // Also add to ucapan list
   const ucArr = getUcapan();
   ucArr.push({ name, msg: hadir === 'hadir' ? `Insyaallah hadir bersama ${jumlah} orang` : 'Mohon maaf belum bisa hadir', hadir, time: Date.now() });
   saveUcapan(ucArr);
+  await pushFirebase('wedding/ucapan', ucArr);
   renderUcapanList();
   document.getElementById('rsvp-name').value = '';
   document.getElementById('rsvp-hadir').value = '';
@@ -1591,7 +1629,12 @@ function showToast2(msg) {
 // ============================
 // INIT
 // ============================
-renderAll();
+async function initApp() {
+  await syncConfigFromFirebase();
+  await syncMessagesFromFirebase();
+  renderAll();
+}
+initApp();
 </script>
 </body>
 </html>
